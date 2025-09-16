@@ -1,0 +1,28 @@
+
+    public static SearchTerm searchTerm() {
+        // 오늘 날짜 범위 설정
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+//        today.set
+        Date todayStart = new Date();
+//        todayStart.setDate(todayStart.getDate() - 1);
+        todayStart.setMinutes(todayStart.getMinutes() - 10);
+        today.set(Calendar.HOUR_OF_DAY, 23);
+        today.set(Calendar.MINUTE, 59);
+        today.set(Calendar.SECOND, 59);
+        today.set(Calendar.MILLISECOND, 999);
+        Date todayEnd = today.getTime();
+
+        // 검색 조건: 읽지 않은 메일 + 오늘 받은 메일
+        SearchTerm unseenTerm = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+        SearchTerm todayFromTerm = new ReceivedDateTerm(ComparisonTerm.GE, todayStart);
+        SearchTerm todayToTerm = new ReceivedDateTerm(ComparisonTerm.LE, todayEnd);
+        SearchTerm todayTerm = new AndTerm(todayFromTerm, todayToTerm);
+        SearchTerm finalTerm = new AndTerm(unseenTerm, todayTerm);
+
+        return finalTerm;
+
+    }
